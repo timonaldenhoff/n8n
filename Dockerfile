@@ -6,7 +6,7 @@ FROM node:${NODE_VERSION}-alpine3.22
 ENV NODE_ENV=production \
     N8N_USER_FOLDER=/home/node/.n8n
 
-RUN apk add --no-cache qpdf gnupg tini tzdata ca-certificates \
+RUN apk add --no-cache python3 qpdf gnupg tini tzdata ca-certificates \
  && npm install -g n8n@${N8N_VERSION} node-qpdf2 \
  && npm cache clean --force
 
