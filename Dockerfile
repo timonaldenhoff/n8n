@@ -1,5 +1,5 @@
 # Build args 
-ARG N8N_VERSION=1.123.18
+ARG N8N_VERSION=2.8.2
 FROM n8nio/n8n:${N8N_VERSION}
 
 LABEL org.opencontainers.image.source="https://github.com/timonaldenhoff/n8n"

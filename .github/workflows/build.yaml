@@ -11,7 +11,7 @@ on:
       n8n_version:
         description: "Base n8n image tag"
         required: true
-        default: "1.123.18"
+        default: "2.8.2"
 
 permissions:
   contents: read
@@ -43,7 +43,7 @@ jobs:
             echo "N8N_VERSION=${N8N_VERSION_INPUT}" >> $GITHUB_ENV
             echo "TAG=${N8N_VERSION_INPUT}" >> $GITHUB_ENV
           else
-            echo "N8N_VERSION=1.123.18" >> $GITHUB_ENV
+            echo "N8N_VERSION=2.8.2" >> $GITHUB_ENV
             echo "TAG=${DEFAULT_TAG}" >> $GITHUB_ENV
           fi
           echo "Using N8N_VERSION=$N8N_VERSION, TAG=$TAG"
