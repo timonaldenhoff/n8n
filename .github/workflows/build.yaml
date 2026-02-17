@@ -9,24 +9,30 @@ on:
   workflow_dispatch:
     inputs:
       n8n_version:
-        description: "Base n8n image tag"
-        required: true
+        description: "Base n8n image tag (also used as version tag)"
+        required: false
         default: "2.9.0"
 
 permissions:
   contents: read
   packages: write
 
+env:
+  IMAGE: ghcr.io/timonaldenhoff/n8n
+  STABLE_TAG: stable
+
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      IMAGE: ghcr.io/timonaldenhoff/n8n
-      DEFAULT_TAG: ${{ github.ref_name == 'main' && 'stable' || 'latest' }}
-      N8N_VERSION_INPUT: ${{ github.event.inputs.n8n_version }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
       - name: Log in to GHCR
         uses: docker/login-action@v3
@@ -35,29 +41,28 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Resolve tags and args
-        id: meta
+      - name: Resolve version + second tag
         run: |
-          # Use input if provided, else default
-          if [ -n "${N8N_VERSION_INPUT}" ]; then
-            echo "N8N_VERSION=${N8N_VERSION_INPUT}" >> $GITHUB_ENV
-            echo "TAG=${N8N_VERSION_INPUT}" >> $GITHUB_ENV
+          # Version used for Dockerfile ARG
+          if [ -n "${{ github.event.inputs.n8n_version }}" ]; then
+            echo "N8N_VERSION=${{ github.event.inputs.n8n_version }}" >> $GITHUB_ENV
+            echo "TAG2=${{ github.event.inputs.n8n_version }}" >> $GITHUB_ENV
           else
             echo "N8N_VERSION=2.9.0" >> $GITHUB_ENV
-            echo "TAG=${DEFAULT_TAG}" >> $GITHUB_ENV
+            echo "TAG2=latest" >> $GITHUB_ENV
           fi
-          echo "Using N8N_VERSION=$N8N_VERSION, TAG=$TAG"
 
-      - name: Build and tag
-        run: |
-          docker build \
-            --build-arg N8N_VERSION="${N8N_VERSION}" \
-            --build-arg TARGETARCH=amd64 \
-            -t "${IMAGE}:${TAG}" \
-            -t "${IMAGE}:latest" \
-            .
+          echo "Building N8N_VERSION=$N8N_VERSION"
+          echo "Pushing tags: ${STABLE_TAG} and ${TAG2}"
 
-      - name: Push
-        run: |
-          docker push "${IMAGE}:${TAG}"
-          docker push "${IMAGE}:latest"
+      - name: Build and push (multi-arch)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          platforms: linux/amd64,linux/arm64
+          build-args: |
+            N8N_VERSION=${{ env.N8N_VERSION }}
+          tags: |
+            ${{ env.IMAGE }}:${{ env.STABLE_TAG }}
+            ${{ env.IMAGE }}:${{ env.TAG2 }}
