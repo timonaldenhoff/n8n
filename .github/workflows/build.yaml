@@ -11,7 +11,7 @@ on:
       n8n_version:
         description: "Base n8n image tag (also used as version tag)"
         required: false
-        default: "2.9.0"
+        default: "2.15.0"
 
 permissions:
   contents: read
@@ -48,7 +48,7 @@ jobs:
             echo "N8N_VERSION=${{ github.event.inputs.n8n_version }}" >> $GITHUB_ENV
             echo "TAG2=${{ github.event.inputs.n8n_version }}" >> $GITHUB_ENV
           else
-            echo "N8N_VERSION=2.9.0" >> $GITHUB_ENV
+            echo "N8N_VERSION=2.15.0" >> $GITHUB_ENV
             echo "TAG2=latest" >> $GITHUB_ENV
           fi
 
