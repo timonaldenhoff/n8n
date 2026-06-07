@@ -1,7 +1,7 @@
 ARG NODE_VERSION=24.13.1
-ARG N8N_VERSION=2.25.3
+ARG N8N_VERSION=2.25.5
 
-FROM node:${NODE_VERSION}-alpine3.22
+FROM node:${NODE_VERSION}-alpine3.23
 
 ENV NODE_ENV=production \
     N8N_USER_FOLDER=/home/node/.n8n
