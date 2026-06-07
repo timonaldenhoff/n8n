@@ -11,7 +11,7 @@ on:
       n8n_version:
         description: "Base n8n image tag (also used as version tag)"
         required: false
-        default: "2.15.0"
+        default: "2.25.3"
 
 permissions:
   contents: read
